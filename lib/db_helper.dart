@@ -70,5 +70,17 @@ class DBHelper{
     return mData;
   }
 
+  ///update
+  Future<bool> updateNote({ required String updatedTitle, required String updatedDesc, required int id}) async{
+    var db = await getDB();
+
+    int rowsEffected = await db.update(TABLE_NOTE_NAME, {
+      COLUMN_NOTE_TITLE : updatedTitle,
+      COLUMN_NOTE_DESC : updatedDesc
+    }, where: "$COLUMN_NOTE_ID = $id");
+
+    return rowsEffected>0;
+  }
+
 
 }
