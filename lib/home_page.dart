@@ -1,36 +1,35 @@
+import 'package:database_302/add_note_page.dart';
 import 'package:database_302/db_helper.dart';
+import 'package:database_302/db_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  DBHelper dbHelper = DBHelper.getInstance();
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descController = TextEditingController();
+class HomePage extends StatelessWidget {
 
   List<Map<String, dynamic>> allNotes = [];
-  
   DateFormat mFormat = DateFormat.yMd();
 
-  @override
-  void initState() {
-    super.initState();
-    getMyNotes();
-  }
 
   @override
   Widget build(BuildContext context) {
+
+    context.read<DBProvider>().getInitialNotes();
+
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
       ),
-      body: allNotes.isNotEmpty
-          ? ListView.builder(
+      body: Consumer<DBProvider>(
+        builder: (_, provider, __){
+
+          allNotes = provider.getAllNotes();
+
+          return allNotes.isNotEmpty
+              ? ListView.builder(
               itemCount: allNotes.length,
               itemBuilder: (_, index) {
                 return ListTile(
@@ -49,21 +48,23 @@ class _HomePageState extends State<HomePage> {
                         ///update
                         IconButton(
                             onPressed: () async{
-                              titleController.text = allNotes[index][DBHelper.COLUMN_NOTE_TITLE];
-                              descController.text = allNotes[index][DBHelper.COLUMN_NOTE_DESC];
-                              showModalBottomSheet(context: context, builder: (_){
+                              var title = allNotes[index][DBHelper.COLUMN_NOTE_TITLE];
+                              var desc = allNotes[index][DBHelper.COLUMN_NOTE_DESC];
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotePage(isUpdate: true, id: allNotes[index][DBHelper.COLUMN_NOTE_ID], title: title, desc: desc,),));
+
+                              /*showModalBottomSheet(context: context, builder: (_){
                                 return getBottomSheetUI(isUpdate: true, id: allNotes[index][DBHelper.COLUMN_NOTE_ID]);
-                              });
+                              });*/
 
                             },
                             icon: Icon(Icons.edit)),
                         ///delete
                         IconButton(
                             onPressed: () async{
-                              bool check = await dbHelper.deleteNote(id: allNotes[index][DBHelper.COLUMN_NOTE_ID]);
+                              /*bool check = await dbHelper.deleteNote(id: allNotes[index][DBHelper.COLUMN_NOTE_ID]);
                               if(check){
                                 getMyNotes();
-                              }
+                              }*/
                             },
                             icon: Icon(
                               Icons.delete,
@@ -74,37 +75,40 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               })
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('No Notes yet'),
-                  OutlinedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
+              : Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('No Notes yet'),
+                OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotePage(),));
+
+                      /*showModalBottomSheet(
                             isDismissible: false,
                             enableDrag: false,
                             context: context,
                             builder: (_) {
                               return getBottomSheetUI();
-                            });
-                      },
-                      child: Text('Add First Note'))
-                ],
-              ),
+                            });*/
+                    },
+                    child: Text('Add First Note'))
+              ],
             ),
-      floatingActionButton: allNotes.isNotEmpty
+          );
+        },
+      ),
+      floatingActionButton: context.watch<DBProvider>().getAllNotes().isNotEmpty
           ? FloatingActionButton(
               onPressed: () async {
-                titleController.clear();
-                descController.clear();
-                showModalBottomSheet(
+                Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotePage(),));
+                /*showModalBottomSheet(
                     isDismissible: false,
                     enableDrag: false,
                     context: context,
                     builder: (_) {
                       return getBottomSheetUI();
-                    });
+                    });*/
               },
               child: Icon(Icons.add),
             )
@@ -112,12 +116,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void getMyNotes() async {
+  /*void getMyNotes() async {
     allNotes = await dbHelper.getAllNotes();
     setState(() {});
-  }
+  }*/
 
-Widget getBottomSheetUI({bool isUpdate = false, int id = 0}){
+/*Widget getBottomSheetUI({bool isUpdate = false, int id = 0}){
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(11),
@@ -214,5 +218,5 @@ Widget getBottomSheetUI({bool isUpdate = false, int id = 0}){
         ],
       ),
     );
-  }
+  }*/
 }
