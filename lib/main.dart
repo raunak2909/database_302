@@ -1,12 +1,17 @@
+import 'package:database_302/cubit/db_cubit.dart';
 import 'package:database_302/db_helper.dart';
 import 'package:database_302/db_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'home_page.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(create: (context) => DBProvider(dbHelper: DBHelper.getInstance()), child: MyApp(),));
+  runApp(BlocProvider(
+    create: (context) => DBCubit(dbHelper: DBHelper.getInstance()),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,11 +23,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: HomePage(),
     );
   }
 }
-

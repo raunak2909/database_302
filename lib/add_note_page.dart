@@ -1,3 +1,4 @@
+import 'package:database_302/cubit/db_cubit.dart';
 import 'package:database_302/db_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -88,7 +89,7 @@ class AddNotePage extends StatelessWidget {
 
                             if(isUpdate){
 
-                              context.read<DBProvider>().updateNote(mTitle: titleController.text, mDesc: descController.text, mCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(), id: id);
+                             // context.read<DBProvider>().updateNote(mTitle: titleController.text, mDesc: descController.text, mCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(), id: id);
                              /* check = await dbHelper.updateNote(
                                   updatedTitle:
                                   titleController.text,
@@ -97,7 +98,7 @@ class AddNotePage extends StatelessWidget {
                                   id: id);*/
 
                             } else {
-                              context.read<DBProvider>().addNote(mTitle: titleController.text,
+                              context.read<DBCubit>().addData(mTitle: titleController.text,
                                 mDesc: descController.text,
                                 mCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(),);
 
