@@ -1,3 +1,4 @@
+import 'package:database_302/bloc/db_bloc.dart';
 import 'package:database_302/cubit/db_cubit.dart';
 import 'package:database_302/db_helper.dart';
 import 'package:database_302/db_provider.dart';
@@ -9,7 +10,7 @@ import 'home_page.dart';
 
 void main() {
   runApp(BlocProvider(
-    create: (context) => DBCubit(dbHelper: DBHelper.getInstance()),
+    create: (context) => DBBloc(dbHelper: DBHelper.getInstance()),
     child: MyApp(),
   ));
 }

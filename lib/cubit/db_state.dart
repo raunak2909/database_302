@@ -1,9 +1,11 @@
+import 'package:database_302/note_model.dart';
+
 abstract class DBState{}
 
 class DBInitialState extends DBState{}
 class DBLoadingState extends DBState{}
 class DBLoadedState extends DBState{
-  List<Map<String, dynamic>> mData;
+  List<NoteModel> mData;
   DBLoadedState({required this.mData});
 }
 class DBErrorState extends DBState{

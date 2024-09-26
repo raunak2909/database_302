@@ -1,8 +1,12 @@
 import 'package:database_302/add_note_page.dart';
+import 'package:database_302/bloc/db_bloc.dart';
+import 'package:database_302/bloc/db_event.dart';
+import 'package:database_302/bloc/db_state.dart';
 import 'package:database_302/cubit/db_cubit.dart';
 import 'package:database_302/cubit/db_state.dart';
 import 'package:database_302/db_helper.dart';
 import 'package:database_302/db_provider.dart';
+import 'package:database_302/note_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,33 +14,36 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  List<Map<String, dynamic>> allNotes = [];
+  List<NoteModel> allNotes = [];
   DateFormat mFormat = DateFormat.yMd();
 
   @override
   Widget build(BuildContext context) {
     /*context.read<DBProvider>().getInitialNotes();*/
-    context.read<DBCubit>().getInitialNotes();
+   // context.read<DBCubit>().getInitialNotes();
+   context.read<DBBloc>().add(GetInitialNotesEvent());
+
+
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
       ),
-      body: BlocBuilder<DBCubit, DBState>(
+      body: BlocBuilder<DBBloc, DBMainState>(
         builder: (_, state) {
-          if (state is DBLoadingState) {
+          if (state is DBMainLoadingState) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          if (state is DBErrorState) {
+          if (state is DBMainErrorState) {
             return Center(
               child: Text('Error: ${state.errorMsg}'),
             );
           }
 
-          if (state is DBLoadedState) {
+          if (state is DBMainLoadedState) {
             allNotes = state.mData;
 
             return allNotes.isNotEmpty
@@ -47,18 +54,17 @@ class HomePage extends StatelessWidget {
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(allNotes[index][DBHelper.COLUMN_NOTE_TITLE]),
+                            Text(allNotes[index].title),
                             Text(
                               mFormat.format(
                                   DateTime.fromMillisecondsSinceEpoch(int.parse(
-                                      allNotes[index]
-                                          [DBHelper.COLUMN_NOTE_CREATED_AT]))),
+                                      allNotes[index].created_at))),
                               style: TextStyle(fontSize: 10),
                             ),
                           ],
                         ),
                         subtitle:
-                            Text(allNotes[index][DBHelper.COLUMN_NOTE_DESC]),
+                            Text(allNotes[index].desc),
                         trailing: SizedBox(
                           width: 100,
                           child: Row(
@@ -66,7 +72,7 @@ class HomePage extends StatelessWidget {
                               ///update
                               IconButton(
                                   onPressed: () async {
-                                    var title = allNotes[index]
+                                    /*var title = allNotes[index]
                                         [DBHelper.COLUMN_NOTE_TITLE];
                                     var desc = allNotes[index]
                                         [DBHelper.COLUMN_NOTE_DESC];
@@ -80,7 +86,7 @@ class HomePage extends StatelessWidget {
                                             title: title,
                                             desc: desc,
                                           ),
-                                        ));
+                                        ));*/
 
                                     /*showModalBottomSheet(context: context, builder: (_){
                                 return getBottomSheetUI(isUpdate: true, id: allNotes[index][DBHelper.COLUMN_NOTE_ID]);
@@ -135,9 +141,9 @@ class HomePage extends StatelessWidget {
           return Container();
         },
       ),
-      floatingActionButton: BlocBuilder<DBCubit, DBState>(
+      floatingActionButton: BlocBuilder<DBBloc, DBMainState>(
         builder: (_, state) {
-          if (state is DBLoadedState) {
+          if (state is DBMainLoadedState) {
             if (state.mData.isNotEmpty) {
               return FloatingActionButton(
                 onPressed: () async {

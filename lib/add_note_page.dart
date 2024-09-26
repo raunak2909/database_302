@@ -1,3 +1,5 @@
+import 'package:database_302/bloc/db_bloc.dart';
+import 'package:database_302/bloc/db_event.dart';
 import 'package:database_302/cubit/db_cubit.dart';
 import 'package:database_302/db_provider.dart';
 import 'package:flutter/material.dart';
@@ -98,9 +100,12 @@ class AddNotePage extends StatelessWidget {
                                   id: id);*/
 
                             } else {
-                              context.read<DBCubit>().addData(mTitle: titleController.text,
+
+                              context.read<DBBloc>().add(AddNoteEvent(title: titleController.text, desc: descController.text, created_at: DateTime.now().millisecondsSinceEpoch.toString()));
+
+                              /*context.read<DBCubit>().addData(mTitle: titleController.text,
                                 mDesc: descController.text,
-                                mCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(),);
+                                mCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(),);*/
 
                               /*check = await dbHelper.addNote(
                                 title: titleController.text,
